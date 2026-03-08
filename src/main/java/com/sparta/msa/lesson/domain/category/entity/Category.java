@@ -1,10 +1,14 @@
-package com.sparta.msa.lesson.domain.user.entity;
+package com.sparta.msa.lesson.domain.category.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -23,38 +27,36 @@ import org.hibernate.annotations.UpdateTimestamp;
 @DynamicUpdate
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "users")
-public class User {
+@Table(name = "categories")
+public class Category {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false)
   String name;
 
-  @Column(nullable = false, unique = true)
-  String email;
+  @JsonBackReference
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_id")
+  Category parent;
 
-  @Column(nullable = false)
-  String password;
-
-  @CreationTimestamp
   @Column(nullable = false, updatable = false)
+  @CreationTimestamp
   LocalDateTime createdAt;
 
-  @UpdateTimestamp
   @Column(nullable = false)
+  @UpdateTimestamp
   LocalDateTime updatedAt;
 
   @Builder
-  public User(
+  public Category(
       String name,
-      String email,
-      String password
+      Category parent
   ) {
     this.name = name;
-    this.email = email;
-    this.password = password;
+    this.parent = parent;
   }
+
 }

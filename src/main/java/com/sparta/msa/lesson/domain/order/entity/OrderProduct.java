@@ -1,11 +1,16 @@
-package com.sparta.msa.lesson.domain.user.entity;
+package com.sparta.msa.lesson.domain.order.entity;
 
+import com.sparta.msa.lesson.domain.product.entity.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,38 +28,45 @@ import org.hibernate.annotations.UpdateTimestamp;
 @DynamicUpdate
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "users")
-public class User {
+@Table(name = "order_products")
+public class OrderProduct {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @Column(nullable = false, length = 50)
-  String name;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id", nullable = false)
+  Order order;
 
-  @Column(nullable = false, unique = true)
-  String email;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id", nullable = false)
+  Product product;
 
   @Column(nullable = false)
-  String password;
+  Integer quantity;
 
-  @CreationTimestamp
+  @Column(nullable = false)
+  BigDecimal price;
+
   @Column(nullable = false, updatable = false)
+  @CreationTimestamp
   LocalDateTime createdAt;
 
-  @UpdateTimestamp
   @Column(nullable = false)
+  @UpdateTimestamp
   LocalDateTime updatedAt;
 
   @Builder
-  public User(
-      String name,
-      String email,
-      String password
+  public OrderProduct(
+      Order order,
+      Product product,
+      Integer quantity,
+      BigDecimal price
   ) {
-    this.name = name;
-    this.email = email;
-    this.password = password;
+    this.order = order;
+    this.product = product;
+    this.quantity = quantity;
+    this.price = price;
   }
 }
